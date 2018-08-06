@@ -2,17 +2,25 @@ package com.proger.ruslan.advancedact;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
@@ -34,6 +42,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.startapp.android.publish.adsCommon.StartAppAd;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -45,6 +58,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private View category;
     private final int REQUEST_CODE_PERMISSION_CAMERA_USING = 58975;
 
+    private InterstitialAd mInterstitialAd;
+    private boolean adIsLoaded;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +68,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        setContentView (new Entry(getApplicationContext()));
         setContentView (R.layout.activity_main);
 //        startActivityForResult(new Intent (getApplicationContext(), AcceleratorModel.class), 0);
+
+        mInterstitialAd = new InterstitialAd(getApplicationContext());
+
+        mInterstitialAd.setAdUnitId("ca-app-pub-1683287051972127/3283289996");
+
+        AdRequest adRequestInter = new AdRequest.Builder().build();
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+
+            }
+        });
+        mInterstitialAd.loadAd(adRequestInter);
 
         setTitle (getString(R.string.main_activity_name));
 
@@ -73,13 +102,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                    Snackbar.make(view, R.string.snack_bar_add_measure, Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-
-                    startActivityForResult(new Intent(getApplicationContext(), AcceleratorModel.class), UPDATE_ACTIVITY);
-                }else
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.CAMERA}, REQUEST_CODE_PERMISSION_CAMERA_USING);
+                startActivityForResult(new Intent (MainActivity.this, GPSLocation.class), MAP_MEASURING);
             }
         });
 
@@ -103,6 +126,61 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
         }
+
+        scheduleNotification(getNotification(), AlarmManager.INTERVAL_HALF_DAY/3);
+    }
+
+    private void scheduleNotification(Notification notification, long delay) {
+        Intent notificationIntent = new Intent(this, Alarm_Notif.class);
+        notificationIntent.putExtra(Alarm_Notif.NOTIFICATION_ID, 1);
+        notificationIntent.putExtra(Alarm_Notif.NOTIFICATION, notification);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        long futureInMillis = SystemClock.elapsedRealtime() + delay;
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, delay, pendingIntent);
+        }
+    }
+
+    private Notification getNotification() {
+        Intent resultIntent = new Intent(this, Intro.class);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
+
+        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String CHANNEL_ID = "my_channel_environment";// The id of the channel.
+            CharSequence name = "MAIN_STREAM";// The user-visible name of the channel.
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+
+            notificationManager.createNotificationChannel(mChannel);
+
+            notificationBuilder.setChannelId(CHANNEL_ID);
+        }
+
+        notificationBuilder.setContentIntent(resultPendingIntent)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                // обязательные настройки
+                .setSmallIcon(R.drawable.measuring_logo)
+                .setContentText("It's time to make measure!") // Текст уведомления
+                .setShowWhen(false)
+                .setTicker("It's time to make measure!")
+                .setWhen(System.currentTimeMillis())
+                .setContentTitle("ENVIRONMENT")
+                .setDefaults(Notification.FLAG_SHOW_LIGHTS
+                        | Notification.DEFAULT_VIBRATE
+                        | Notification.FLAG_NO_CLEAR
+                        | Notification.FLAG_FOREGROUND_SERVICE)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setAutoCancel(true)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+
+        return notificationBuilder.build();
     }
 
     @Override
@@ -133,10 +211,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                startActivityForResult(new Intent (MainActivity.this, AcceleratorModel.class), 0);
                 break;
             case R.id.make_new_matches:
-                if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-                    startActivityForResult(new Intent(getApplicationContext(), AcceleratorModel.class), UPDATE_ACTIVITY);
-                else
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.CAMERA}, REQUEST_CODE_PERMISSION_CAMERA_USING);
+                startActivityForResult(new Intent (MainActivity.this, GPSLocation.class), MAP_MEASURING);
                 break;
             case R.id.find_my_matches_on_map:
                 startActivityForResult(new Intent (MainActivity.this, GPSLocation.class), MAP_MEASURING);
@@ -181,7 +256,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 finish();
                 break;
             case 1:
-                startActivityForResult(new Intent (MainActivity.this, AcceleratorModel.class), UPDATE_ACTIVITY);
+                if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+                    ActivityCompat.requestPermissions(this,
+                            new String[] {Manifest.permission.CAMERA},
+                            REQUEST_CODE_PERMISSION_CAMERA_USING);
+                else
+                    startActivityForResult(new Intent (MainActivity.this, AcceleratorModel.class), UPDATE_ACTIVITY);
                 break;
             case 2:
                 startActivity(new Intent(getApplicationContext(), Introducing.class));
@@ -200,6 +281,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                                 dataBaseController.deleteAll();
                                 updateList();
+
+                                if (mInterstitialAd.isLoaded()) {
+                                    mInterstitialAd.show();
+                                    adIsLoaded = true;
+                                } else
+                                    StartAppAd.showAd(MainActivity.this);
                             }
                         }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override

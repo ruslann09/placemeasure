@@ -141,7 +141,7 @@
     <string name="location_settings">Настройки локационного расположения</string>
     <string name="measureinfoactivityname">Информация об измерении</string>
     <string name="go_to_my_matches">Мои записи</string>
-    <string name="make_a_new_match">AR - измерение</string>
+    <string name="make_a_new_match">Новое измерение</string>
     <string name="find_the_measures_on_map">Измерение на карте</string>
     <string name="location_checker_enabled">Обнаружение локации</string>
     <string name="active_information">Информация активности</string>

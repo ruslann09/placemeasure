@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/AdvancedAct.iml" filepath="$PROJECT_DIR$/AdvancedAct.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/environment.iml" filepath="$PROJECT_DIR$/environment.iml" />
     </modules>
   </component>
 </project>

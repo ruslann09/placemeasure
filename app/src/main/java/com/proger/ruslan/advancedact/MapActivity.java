@@ -16,11 +16,15 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ThemedSpinnerAdapter;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -31,6 +35,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.startapp.android.publish.adsCommon.StartAppAd;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,10 +57,26 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     private static final long MIN_TIME_BW_UPDATES = 500;
     protected LocationManager locationManager;
 
+    private InterstitialAd mInterstitialAd;
+    private boolean adIsLoaded;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        mInterstitialAd = new InterstitialAd(getApplicationContext());
+
+        mInterstitialAd.setAdUnitId("ca-app-pub-1683287051972127/7846077884");
+
+        AdRequest adRequestInter = new AdRequest.Builder().build();
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+
+            }
+        });
+        mInterstitialAd.loadAd(adRequestInter);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -255,5 +276,24 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 marker.hideInfoWindow();
             }
         }, timeToTime);
+    }
+
+    @Override
+    public boolean onKeyDown(final int pKeyCode, final KeyEvent pEvent) {
+        if(pKeyCode == KeyEvent.KEYCODE_BACK && pEvent.getAction() == KeyEvent.ACTION_DOWN) {
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
+            if (mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+                adIsLoaded = true;
+            } else
+                StartAppAd.showAd(MapActivity.this);
+
+            finish();
+
+            return true;
+        } else {
+            return super.onKeyDown(pKeyCode, pEvent);
+        }
     }
 }

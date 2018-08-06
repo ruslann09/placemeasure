@@ -31,6 +31,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -44,10 +47,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.startapp.android.publish.adsCommon.StartAppAd;
 
 import org.w3c.dom.Text;
 
 public class GPSLocation extends FragmentActivity implements OnMapReadyCallback {
+
+    //основные переменные для работы с интерактивной картой GoogleMap
 
     public static final String TYPE = "LOCATION";
 
@@ -70,12 +76,30 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
     private static final long MIN_TIME_BW_UPDATES = 5000;
     protected LocationManager locationManager;
 
-    private Button fix;
+    private Button fix, stop;
+
+    private InterstitialAd mInterstitialAd;
+    private boolean adIsLoaded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gpslocation);
+
+        mInterstitialAd = new InterstitialAd(getApplicationContext());
+
+        mInterstitialAd.setAdUnitId("ca-app-pub-1683287051972127/3283289996");
+
+        AdRequest adRequestInter = new AdRequest.Builder().build();
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+
+            }
+        });
+        mInterstitialAd.loadAd(adRequestInter);
+
+        //получения интента с запросом на редактирование
 
         if (!isStart) {
             try {
@@ -100,8 +124,10 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //создание объекта изменения позиций
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
+        //инициализация объекта слушателя смены позиций
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -113,6 +139,9 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
                         addMarker(String.valueOf(dotNums - 1), (dotNums - 1) + " in fixes", places.get(String.valueOf(dotNums - 1)),
                                 googleMap, true, BitmapDescriptorFactory.HUE_CYAN);
                     }
+
+                    //расчет данных
+
 
                     buildDestination();
                     getPerimeter();
@@ -133,6 +162,8 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
             }
         };
 
+        //кнопки для работы и управления изменением позиций
+
         fix = (Button) findViewById(R.id.check_pos);
         fix.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,6 +171,21 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
                 setConclusionPoint();
             }
         });
+
+        fix.setEnabled(false);
+
+        stop = (Button) findViewById(R.id.stop_pos);
+
+        stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setDestination = true;
+
+                setConclusionPoint();
+            }
+        });
+
+        //проверка возможности появления инструкции по работе с картой в приложении (только один раз за использование)
 
         if (getSharedPreferences(getApplicationContext().getString(R.string.APP_PREFERENCES), Context.MODE_PRIVATE).getBoolean("isInitMapMeasure", true)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(GPSLocation.this);
@@ -158,6 +204,9 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
         }
     }
 
+
+    //расчет назначения позиций карты
+
     private void buildDestination () {
         if (positions.size() > 1) {
             line = new PolylineOptions();
@@ -168,6 +217,8 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
                 line.add(marker.getPosition());
                 latLngBuilder.include(marker.getPosition());
             }
+
+            //возможность выгрузки данных для отправке в главную активность
 
             if (setDestination) {
                 try {
@@ -187,25 +238,31 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
                             final Date timeNow = new Date();
                             final SimpleDateFormat dateFormatStamp = new SimpleDateFormat("yyyy.MM.dd hh.mm.ss.SSS");
 
+                            double quality_percent = ((positions.size() - 2) + perimeter
+                                    + area)/Math.ceil((positions.size() - 2) + perimeter + area)*100;
+
                             Intent intent = new Intent();
 
                             intent.putExtra("Matches", new DataMatches(-1, area, perimeter, positions.size() - 2,
-                                    dotsRelative, dateFormatStamp.format(timeNow), TYPE, "", "", Math.random() * 2 + 97));
+                                    dotsRelative, dateFormatStamp.format(timeNow), TYPE, "", "", quality_percent));
 
                             setResult(RESULT_OK, intent);
 
+                            if (mInterstitialAd.isLoaded()) {
+                                mInterstitialAd.show();
+                                adIsLoaded = true;
+                            } else
+                                StartAppAd.showAd(GPSLocation.this);
+
                             finish();
                         }
-                    }, 3500);
+                    }, 1500);
                 } catch (Exception e) {
                     Toast.makeText(getApplicationContext(), getString(R.string.unknown_wrong), Toast.LENGTH_SHORT).show();
                 }
             }
 
             line.geodesic(true);
-
-//                    line.add(places.get("0"));
-//                    latLngBuilder.include(places.get("0"));
 
             if (curPolyLine != null)
                 curPolyLine.remove();
@@ -221,6 +278,8 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
         }
     }
 
+    //расчет периметра по формуле
+
     private void getPerimeter () {
         LatLng lastPos = null;
 
@@ -235,9 +294,9 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
 
             lastPos = marker.getPosition();
         }
-
-        Toast.makeText(getApplicationContext(), getString(R.string.perimeter_is) + perimeter, Toast.LENGTH_LONG).show ();
     }
+
+    //расчет площади по формуле
 
     private void getArea () {
         double plus = 0, minus = 0;
@@ -252,19 +311,16 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
         }
 
         area = (long)(Math.abs (plus - minus));
-
-        Toast.makeText(getApplicationContext(), getString(R.string.square_is) + area, Toast.LENGTH_LONG).show ();
     }
 
-    private void extractAllData () {
-
-    }
+    //расчет расстояния между точками
 
     public static float distBetween(LatLng pos1, LatLng pos2) {
         return distBetween(pos1.latitude, pos1.longitude, pos2.latitude,
                 pos2.longitude);
     }
 
+    //переопределение методы расчета расстояния между позициями
 
     public static float distBetween(double lat1, double lng1, double lat2, double lng2) {
         double earthRadius = 3958.75;
@@ -282,6 +338,9 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
         return (float) (dist * meterConversion);
     }
 
+
+    //проверка доступности отслеживания
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -298,6 +357,8 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
     public static long TIME_INTERVAL_FOR_EXIT = 1500;
     private long lastTimeBackPressed;
 
+    //защита от случайного оканчания сессиии
+
     @Override
     public boolean onKeyDown(final int pKeyCode, final KeyEvent pEvent) {
         if(pKeyCode == KeyEvent.KEYCODE_BACK && pEvent.getAction() == KeyEvent.ACTION_DOWN) {
@@ -313,6 +374,8 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
             return super.onKeyDown(pKeyCode, pEvent);
         }
     }
+
+    //установка параметров для управления картой
 
     private void setLocaleManager() {
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -342,10 +405,13 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
         places.put(getString(R.string.ImHere), new LatLng(latitude, longitude));
     }
 
+    //наствройка самой карты для комфортной работы
+    //и реализация контекстного меню для настройки управления
+
     private void setVisibleState() {
         final String[] mChooseCats = {getString(R.string.layers), getString(R.string.satillite),
                 getString(R.string.satelliteAndInfo), getString(R.string.autoMeasuring)
-         + (isAutoMeasuring ? getString(R.string.takeOff) : getString(R.string.takeOn))};
+                + (isAutoMeasuring ? getString(R.string.takeOff) : getString(R.string.takeOn)), getString(R.string.get_actual_data)};
         AlertDialog.Builder builder = new AlertDialog.Builder(GPSLocation.this);
         builder.setTitle(R.string.layersSystem)
                 .setCancelable(false)
@@ -385,6 +451,12 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
                                         else
                                             fix.setEnabled(true);
                                         break;
+                                    case 4:
+                                        Toast.makeText(getApplicationContext(), getString (R.string.perimeter_is) + " "
+                                                + String.valueOf(perimeter), Toast.LENGTH_LONG).show ();
+                                        Toast.makeText(getApplicationContext(), getString (R.string.square_is) + " "
+                                                + String.valueOf(area), Toast.LENGTH_LONG).show ();
+                                        break;
                                     default:
                                         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                                         break;
@@ -395,17 +467,15 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
         alert.show();
     }
 
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        locationManager.removeUpdates(locationListener);
-//    }
+    //добавление новой позиции на интерактивную карту
 
     private void addMarker(String name, String snippet, LatLng pos, GoogleMap googleMap, boolean isDraggable, float color) {
         MarkerOptions option = new MarkerOptions().position(pos).title(name).draggable(isDraggable).alpha(0.5f).snippet(snippet).icon(
                 BitmapDescriptorFactory.defaultMarker(color)).zIndex(1f);
         positions.add(googleMap.addMarker(option));
     }
+
+    //установка полного определения карты
 
     private void setAllProperties() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -476,6 +546,7 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
         googleMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
             @Override
             public void onMyLocationChange(Location location) {
+                fix.setEnabled(true);
                 positions.get(0).setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
             }
         });
@@ -507,6 +578,8 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
         getArea();
     }
 
+    //открытие окна отображения доступности точек на карте
+
     private void showAlertOnPoint (final Marker marker, final long timeToTime) {
         marker.showInfoWindow();
 
@@ -517,6 +590,8 @@ public class GPSLocation extends FragmentActivity implements OnMapReadyCallback 
             }
         }, timeToTime);
     }
+
+    //заключение позиции на карту
 
     private void setConclusionPoint () {
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED

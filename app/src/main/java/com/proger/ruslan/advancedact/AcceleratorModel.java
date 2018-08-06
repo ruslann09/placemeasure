@@ -27,6 +27,11 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.startapp.android.publish.adsCommon.StartAppAd;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
@@ -57,11 +62,27 @@ public class AcceleratorModel extends AppCompatActivity implements SensorEventLi
 
     final int CAMERA_ID = 0;
 
+    private InterstitialAd mInterstitialAd;
+    private boolean adIsLoaded;
+
     @Override
     public void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.surface_viewer);
+
+        mInterstitialAd = new InterstitialAd(getApplicationContext());
+
+        mInterstitialAd.setAdUnitId("ca-app-pub-1683287051972127/4399138532");
+
+        AdRequest adRequestInter = new AdRequest.Builder().build();
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+
+            }
+        });
+        mInterstitialAd.loadAd(adRequestInter);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -785,8 +806,6 @@ public class AcceleratorModel extends AppCompatActivity implements SensorEventLi
                 final Date timeNow = new Date ();
                 final SimpleDateFormat dateFormatStamp = new SimpleDateFormat("yyyy.MM.dd hh.mm.ss.SSS");
 
-                double quality_percent;
-
                 try {
                     if (intent.hasExtra("Matches")) {
                         matches = (DataMatches) getIntent().getSerializableExtra("Matches");
@@ -798,6 +817,13 @@ public class AcceleratorModel extends AppCompatActivity implements SensorEventLi
                                 dotsRelative, dateFormatStamp.format(timeNow), TYPE, "", "", Math.random() * 2 + 97));
 
                     setResult(RESULT_OK, intent);
+
+                    if (mInterstitialAd.isLoaded()) {
+                        mInterstitialAd.show();
+                        adIsLoaded = true;
+                    } else
+                        StartAppAd.showAd(AcceleratorModel.this);
+
                     finish();
                 } catch (Exception e) {
                     Toast.makeText(getApplicationContext(), getString(R.string.unknown_wrong), Toast.LENGTH_SHORT).show();

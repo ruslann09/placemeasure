@@ -200,4 +200,8 @@
     <string name="note_row">Input other info about measure</string>
     <string name="meter">m</string>
     <string name="date">Date</string>
+    <string name="stop_and_quite">Stop and quite</string>
+    <string name="get_actual_data">Get actual measure</string>
+    <string name="left_normal">by left normal -</string>
+    <string name="right_normal">by right normal -</string>
 </resources>
