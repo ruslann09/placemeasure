@@ -6,10 +6,9 @@
     android:background="@color/colorPrimaryDark">
 
     <ImageView
-        android:id="@+id/imageView"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_gravity="center"
-        app:srcCompat="@mipmap/measuring_logo" />
+        app:srcCompat="@drawable/logo" />
 
 </FrameLayout>

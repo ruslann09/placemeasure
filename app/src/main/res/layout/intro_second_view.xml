@@ -8,16 +8,14 @@
     android:weightSum="100">
 
     <ImageView
-        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_gravity="center"
         android:layout_weight="30"
         android:paddingTop="50dp"
-        app:srcCompat="@mipmap/measuring_logo" />
+        app:srcCompat="@drawable/logo" />
 
     <TextView
-        android:id="@+id/readme"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="50"
@@ -32,7 +30,6 @@
         android:textStyle="bold" />
 
     <ImageView
-        android:id="@+id/imageView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="20"

@@ -16,7 +16,6 @@
         android:weightSum="100">
 
         <LinearLayout
-            android:id="@+id/themeStyle1"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
@@ -42,7 +41,6 @@
                     android:weightSum="100">
 
                     <ImageView
-                        android:id="@+id/imageView2"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="80"
@@ -54,7 +52,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/themeStyle2"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
@@ -80,7 +77,6 @@
                     android:weightSum="100">
 
                     <ImageView
-                        android:id="@+id/imageView2"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="80"
@@ -100,7 +96,6 @@
         android:weightSum="100">
 
         <LinearLayout
-            android:id="@+id/themeStyle3"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
@@ -126,7 +121,6 @@
                     android:weightSum="100">
 
                     <ImageView
-                        android:id="@+id/imageView2"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="80"
@@ -138,7 +132,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/themeStyle4"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
@@ -164,7 +157,6 @@
                     android:weightSum="100">
 
                     <ImageView
-                        android:id="@+id/imageView2"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="80"

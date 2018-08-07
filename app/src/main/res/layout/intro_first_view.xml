@@ -9,15 +9,13 @@
 
     <ImageView
         android:paddingTop="50dp"
-        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_gravity="center"
         android:layout_weight="30"
-        app:srcCompat="@mipmap/measuring_logo" />
+        app:srcCompat="@drawable/logo" />
 
     <TextView
-        android:id="@+id/readme"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="50"
@@ -33,7 +31,6 @@
         android:typeface="normal" />
 
     <ImageView
-        android:id="@+id/imageView3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="20"

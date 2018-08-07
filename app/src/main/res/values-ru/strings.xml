@@ -1,10 +1,9 @@
 <resources>
-    <string name="app_name">ENVIRONMENT</string>
+    <string name="app_name">GPS поисковик</string>
 
     <string name="navigation_drawer_open">Открыть сновное меню</string>
     <string name="navigation_drawer_close">Закрыть сновное меню</string>
 
-    <string name="action_settings">Настройки</string>
     <string name="title_activity_settings">Настройки инструментария</string>
 
     <string name="title_activity_introducing">Знакомство</string>
@@ -56,20 +55,6 @@
         <item>-1</item>
     </string-array>
 
-    <string-array name="list_preference_entries">
-        <item>Entry 1</item>
-        <item>Entry 2</item>
-        <item>Entry 3</item>
-    </string-array>
-
-    <string-array name="list_preference_entry_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
-
-    <string-array name="multi_select_list_preference_default_value" />
-
     <string name="pref_title_system_sync_settings">System sync settings</string>
 
     <!-- Example settings for Notifications -->
@@ -84,8 +69,6 @@
     <string name="title_activity_login">Sign in</string>
 
     Example names for toolbar
-    <string name="all_rights_reserved">Все права защиены 2018©</string>
-    <string name="WriteOnOpening">Last updated 10.05.2018</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
@@ -98,8 +81,6 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="tools_nav">Параметры</string>
-    <string name="accelerator_mode">Измерение в AR</string>
 
     <!--Example names for errors-->
     <string name="unknown_wrong">Что-то пошло не так! Попробуйте перезапустить сессию!</string>
@@ -136,32 +117,20 @@
     <string name="presents_third_slide">делитесь результатами и всевозможными хитростями с коллегами</string>\
 
     <!--GPSLocationActivity-->
-    <string name="provider_gps">Системы спутниковой навигации</string>
-    <string name="provider_network">Соединение по сети интернет</string>
-    <string name="location_settings">Настройки локационного расположения</string>
     <string name="measureinfoactivityname">Информация об измерении</string>
     <string name="go_to_my_matches">Мои записи</string>
     <string name="make_a_new_match">Новое измерение</string>
     <string name="find_the_measures_on_map">Измерение на карте</string>
     <string name="location_checker_enabled">Обнаружение локации</string>
-    <string name="active_information">Информация активности</string>
-    <string name="share_my_measures">Поделиться измерениями</string>
-    <string name="edit_themes">Изменить тему</string>
     <string name="callback_to_developer">Связаться с нами</string>
     <string name="must_have_permission_enabled">Проверьте доступность разрешений у приложения в настройках \"ENVIRONMENT\"</string>
-    <string name="storage_permission_enabled">Включите разрешение к хранилищу \"ENVIRONMENT\"</string>
-    <string name="snack_bar_add_measure">Добавить новое измерение!</string>
     <string name="checkTheLocationPermissions">Проверьте доступность провайдеров GPS и Network для определения месторасположения!</string>
-    <string name="moveTheMarker">Переместите маркер на новую позицию</string>
     <string name="tapAgainToExit">Нажмите ещё раз для выхода из приложения</string>
     <string name="et_card">Карта</string>
     <string name="et_pen">Ручка</string>
     <string name="et_book">Книга</string>
     <string name="selectTheEthalone">Выберите эталонный объект</string>
     <string name="bd_id">|_id:|</string>
-    <string name="bd_area">|площадь:|</string>
-    <string name="bd_perimeter">|периметр:|</string>
-    <string name="bd_dots">|точки:|</string>
 
     <!--Info productions values-->
     <string name="type_measure">Тип</string>
@@ -184,7 +153,6 @@
     <string name="fill_in_all">Заполните все поля перед отправкой!</string>
     <string name="your_name">Как вас зовут?</string>
     <string name="message_text">Введите текст сообщения сюда</string>
-    <string name="need_callback">Хотите получить потверждение изменения?</string>
     <string name="send_message">Отправить сообщение</string>
     <string name="clear_message">Отчистить форму</string>
     <string name="referenceWasSet">Эталонный объект был успешно установлен!\n Теперь вы можете проводить измерения!</string>
@@ -201,5 +169,4 @@
     <string name="yourCurrentLocation">Это ваша текущая позиция</string>
     <string name="note_row">Напишите сюда любую подсказку поиска</string>
     <string name="meter">м</string>
-    <string name="date">Дата</string>
 </resources>

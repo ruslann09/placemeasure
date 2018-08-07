@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="100"
-    tools:context="com.proger.ruslan.advancedact.MeasureInitInfo">
+    tools:context="com.itprogit.utils.gpstracker.MeasureInitInfo">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -28,11 +28,10 @@
                 android:weightSum="100">
 
                 <ImageView
-                    android:id="@+id/shotView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    app:srcCompat="@mipmap/measuring_logo" />
+                    app:srcCompat="@drawable/logo" />
             </LinearLayout>
 
             <LinearLayout
@@ -71,7 +70,6 @@
                 android:weightSum="100">
 
                 <TextView
-                    android:id="@+id/textView7"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="50"
@@ -99,7 +97,6 @@
                 android:weightSum="100">
 
                 <TextView
-                    android:id="@+id/textView8"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="50"
@@ -126,7 +123,6 @@
                 android:weightSum="100">
 
                 <TextView
-                    android:id="@+id/textView13"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="50"
@@ -153,7 +149,6 @@
                 android:weightSum="100">
 
                 <TextView
-                    android:id="@+id/textView9"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="50"
@@ -180,7 +175,6 @@
                 android:weightSum="100">
 
                 <TextView
-                    android:id="@+id/textView10"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="50"
@@ -208,7 +202,6 @@
                 android:weightSum="100">
 
                 <TextView
-                    android:id="@+id/textView11"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="50"
@@ -238,7 +231,6 @@
                 android:weightSum="100">
 
                 <TextView
-                    android:id="@+id/textView12"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="50"
